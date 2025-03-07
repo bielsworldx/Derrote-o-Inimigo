@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derrote o Monstro</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgb(48, 48, 48);
+            color: white;
+        }
+        #game-container {
+            width: 600px;
+            height: 400px;
+            background-color: rgb(19, 19, 19);
+            border: 3px solid white;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        #player {
+            width: 80px;
+            position: absolute;
+            bottom: 10px;
+            left: 260px;
+            transition: transform 0.1s;
+        }
+        #enemy {
+            width: 80px;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+        }
+        #dialogue {
+            background-color: white;
+            padding: 10px;
+            width: 80%;
+            margin: 10px auto;
+            border-radius: 5px;
+            color: black;
+        }
+        .health-container {
+            width: 250px;
+            height: 20px;
+            background: grey;
+            margin: 10px auto;
+            border: 2px solid white;
+            position: relative;
+        }
+        .health {
+            height: 100%;
+            transition: width 0.3s, background 0.3s;
+        }
+        #player-health {
+            background: green;
+            width: 100%;
+        }
+        #enemy-health {
+            background: red;
+            width: 100%;
+        }
+        .btn {
+            width: 180px;
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .dmg {
+            background: red;
+            color: white;
+            transition: background 0.8s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .dmg:hover {
+            transform: scale(1.1);
+            background-image: url(damage.gif);
+            background-size: cover;
+            background-position: center;
+            color: black;
+        }
+        .heal {
+            background: green;
+            color: white;
+            transition: background 0.8s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .heal:hover {
+            transform: scale(1.1);
+            background-image: url(heal.gif);
+            background-size: cover;
+            background-position: center;
+            color: black;
+        }
+        .shop {
+            background: yellow;
+            color: white;
+            transition: background 0.8s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .shop:hover {
+            transform: scale(1.1);
+            background-image: url(shop.gif);
+            background-size: cover;
+            background-position: center;
+            color: black;
+        }
+        .atk {
+            background: purple;
+            color: white;
+            transition: background 0.8s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .atk:hover {
+            transform: scale(1.1);
+            background-image: url(atk.gif);
+            background-size: cover;
+            background-position: center;
+            color: black; 
+        }
+    </style>
+</head>
+<body>
+    <h2>Derrote o Inimigo</h2>
+    <div id="dialogue">Bem vindo! Use as setas para mover o personsagem e clique nos botões para executar ações.</div>
+    <div id="game-container">
+        <img src="player.png" alt="Jogador" id="player">
+        <img src="enemy.png" alt="Inimigo" id="enemy">
+    </div>
+    <h3>Vida do Jogador:</h3>
+    <div class="health-container">
+        <div id="player-health" class="health"></div>
+    </div>
+    <h3>Vida do Inimigo:</h3>
+    <div class="health-container">
+        <div id="enemy-health" class="health"></div>
+    </div>
+    <button class="btn dmg" onclick="healthShift(-20)">💀Tomar Dano</button>
+    <button class="btn heal" onclick="healthShift(20)">💉Curar</button>
+    <button class="btn shop" onclick="openShop()">🛒Abrir Loja</button>
+    <button class="btn atk" onclick="attackEnemy()">🪄Ataque Especial</button>
+    <script>
+        let playerHealth = 100;
+        let enemyHealth = 100;
+        let posX = 260;
+        let posY = 320;
+
+        document.addEventListener("keydown", (e)=> {
+            if (e.key==="ArrowLeft" && posX > 10) posX-=20;
+            if (e.key==="ArrowRight" && posX < 510) posX+=20;
+            document.getElementById("player").style.left = posX + "px";
+            
+            if (e.key==="ArrowUp" && posY > 10) posY-=20; 
+            if (e.key==="ArrowDown" && posY < 320) posY+=20; 
+            document.getElementById("player").style.top = posY + "px";
+        })
+
+        function healthShift(change) {
+            playerHealth += change;
+            if (playerHealth >= 100) playerHealth=100;
+            if (playerHealth <= 0) playerHealth = 0;
+            let bar = document.getElementById("player-health");
+            bar.style.width = playerHealth+"%";
+            bar.style.background= playerHealth>60 ? "green" : playerHealth>30 ? "yellow" : "red";
+            if(playerHealth === 0) document.getElementById("dialogue").innerText="Você perdeu toda a sua vida, Game Over!";
+        }
+        function openShop(){
+            let choice = confirm("Você deseja comprar uma pocção de cura por Dez moedas?");
+            if (choice) healthShift(30);
+        }
+        function attackEnemy() {
+            enemyHealth -= 25;
+            if (enemyHealth <= 0) enemyHealth = 0;
+            let bar = document.getElementById("enemy-health");
+            bar.style.width = enemyHealth+"%";
+            document.getElementById("enemy").style.transform="scale(1.2)";
+            setTimeout(() => document.getElementById("enemy").style.transform = "scale(1)", 200);
+            if(enemyHealth === 0) document.getElementById("dialogue").innerText="Você derrotou o inimigo, parabéns!";
+        }
+    </script>
+</body>
+</html>
